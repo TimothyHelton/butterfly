@@ -1,0 +1,88 @@
+version: '3.7'
+
+services:
+
+  nginx:
+    container_name: butterfly_nginx
+    image: nginx:alpine
+    networks:
+      - butterfly-network
+    ports:
+      - 8080:80
+    restart: always
+    volumes:
+      - ../docs/_build/html:/usr/share/nginx/html:ro
+
+  postgres:
+    container_name: butterfly_postgres
+    image: postgres:alpine
+    environment:
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+    networks:
+      - butterfly-network
+    ports:
+      - 5432:5432
+    restart: always
+    volumes:
+      - butterfly-db:/var/lib/postgresql/data
+
+  pgadmin:
+    container_name: butterfly_pgadmin
+    image: dpage/pgadmin4
+    depends_on:
+      - postgres
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD}
+    external_links:
+      - butterfly_postgres:butterfly_postgres
+    networks:
+      - butterfly-network
+    ports:
+      - 5000:80
+
+  python:
+    container_name: butterfly_python
+    build:
+      context: ..
+      dockerfile: docker/python.Dockerfile
+    depends_on:
+      - postgres
+    image: butterfly_python
+    networks:
+      - butterfly-network
+    ports:
+      - 8888:8080
+    restart: always
+    tty: true
+    volumes:
+      - ..:/usr/src/butterfly
+
+  jenkins:
+    container_name: butterfly_jenkins
+    build:
+      context: ..
+      dockerfile: docker/jenkins.Dockerfile
+    depends_on:
+      - postgres
+      - python
+    image: butterfly_jenkins
+    ports:
+      - 8081:8080
+      - 50000:50000
+    restart: unless-stopped
+    tty: true
+    volumes:
+      - butterfly-jenkins_home:/var/jenkins_home
+      - /var/run/docker.sock:/var/run/docker.sock
+
+networks:
+  butterfly-network:
+    name: butterfly
+
+volumes:
+  butterfly-db:
+  butterfly-jenkins_home:
+

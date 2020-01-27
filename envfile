@@ -1,0 +1,9 @@
+# PGAdmin
+export PGADMIN_DEFAULT_EMAIL=postgres@butterfly.com
+export PGADMIN_DEFAULT_PASSWORD=postgres
+
+# Postgres
+export POSTGRES_PASSWORD=postgres
+export POSTGRES_DB=butterfly
+export POSTGRES_USER=postgres
+
