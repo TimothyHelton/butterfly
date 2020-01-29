@@ -77,7 +77,7 @@ setup(
         'Programming Language :: Python :: 3.7',
         'Topic :: Software Development :: Build Tools',
     ],
-    keywords='EnterKeywordsHere',
+    keywords='deep learning, PyTorch, object detection, classification',
     packages=find_packages(exclude=[
         'data',
         'docker',
@@ -89,6 +89,12 @@ setup(
     ),
     install_requires=[
         'click',
+        'numpy',
+        'pandas',
+        'plotly',
+        'scikit-learn',
+        'torch',
+        'torchvision',
     ],
     extras_require={
          'all': combine_dependencies(dependencies.keys()),
