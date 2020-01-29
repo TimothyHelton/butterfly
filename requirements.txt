@@ -1,0 +1,2 @@
+The NVIDIA container will configure the Python package versions.
+See the `docker` directory for Docker build files.
