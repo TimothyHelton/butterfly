@@ -6,7 +6,7 @@ else
 endif
 MOUNT_DIR=$(shell pwd)
 MODELS=/opt/models
-PKG_MANAGER=pip
+PKG_MANAGER=conda
 PORT:=$(shell awk -v min=16384 -v max=32768 'BEGIN{srand(); print int(min+rand()*(max-min+1))}')
 NOTEBOOK_NAME=$(USER)_notebook_$(PORT)
 SRC_DIR=/usr/src/butterfly
@@ -122,7 +122,7 @@ docs-view: docker-up
 ipython: docker-up
 	docker container exec -it $(PROJECT)_python ipython
 
-jenkins-setup: 
+jenkins-setup:
 	@docker exec -u root $(PROJECT)_jenkins chgrp docker /var/run/docker.sock
 	@echo
 	@docker logs $(PROJECT)_jenkins 2>&1 | grep -A 5 "Jenkins initial"
@@ -171,7 +171,7 @@ pytorch-docker:
 				docker/docker-compose.yaml \
 			 && sed -i -e 's/tensorflow.Dockerfile/pytorch.Dockerfile/g' \
 				docker/docker-compose.yaml \
-			 && sed -i -e 's/PKG_MANAGER=pip/PKG_MANAGER=conda/g' \
+			 && sed -i -e 's/PKG_MANAGER=conda/PKG_MANAGER=conda/g' \
 				Makefile"
 
 snakeviz: docker-up snakeviz-server
@@ -194,53 +194,6 @@ snakeviz-server: docker-up
 				--port $(PORT) \
 				--server"
 	docker network connect $(PROJECT) snakeviz_$(PORT)
-
-tensorflow: tensorflow-docker docker-rebuild
-
-tensorflow-docker:
-	docker container run --rm \
-		-v `pwd`:/usr/src/$(PROJECT) \
-		-w /usr/src/$(PROJECT) \
-		ubuntu \
-		/bin/bash -c \
-			"sed -i -e 's/python.Dockerfile/tensorflow.Dockerfile/g' \
-				docker/docker-compose.yaml \
-			 && sed -i -e 's/pytorch.Dockerfile/tensorflow.Dockerfile/g' \
-				docker/docker-compose.yaml \
-			 && sed -i -e 's/PKG_MANAGER=conda/PKG_MANAGER=pip/g' \
-				Makefile \
-			 && echo '*********************************************************************************' \
-			 && echo '*********************************************************************************' \
-			 && echo \
-			 && echo 'Add \"tensorflow\" or \"tensorflow-gpu\" to install_requires in the setup.py file' \
-			 && echo \
-			 && echo '*********************************************************************************' \
-			 && echo '*********************************************************************************'"
-
-tensorflow-models: tensorflow docker-rebuild
-ifneq ($(wildcard ${MODELS}), )
-	echo "Updating TensorFlow Models Repository"
-	cd ${MODELS} \
-	&& git checkout master \
-	&& git pull
-	cd ${MOUNT_DIR}
-else
-	echo "Cloning TensorFlow Models Repository to ${MODELS}"
-	mkdir -p ${MODELS}
-	git clone https://github.com/tensorflow/models.git ${MODELS}
-endif
-
-test: docker-up
-	docker container exec $(PROJECT)_python \
-		/bin/bash -c "py.test\
-				--basetemp=pytest \
-				--cov=. \
-				--cov-report html \
-				--doctest-modules \
-				--ff \
-				--pep8 \
-				-r all \
-				-vvv"
 
 tests-coverage: tests
 	${BROWSER} htmlcov/index.html
