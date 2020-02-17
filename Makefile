@@ -195,7 +195,19 @@ snakeviz-server: docker-up
 				--server"
 	docker network connect $(PROJECT) snakeviz_$(PORT)
 
-tests-coverage: tests
+test: docker-up
+	docker container exec $(PROJECT)_python \
+		/bin/bash -c "py.test\
+				--basetemp=pytest \
+				--cov=$(PROJECT) \
+				--cov-report html \
+				--doctest-modules \
+				--ff \
+				--pycodestyle \
+				-r all \
+				-vvv"
+
+test-coverage: test
 	${BROWSER} htmlcov/index.html
 
 upgrade-packages: docker-up
