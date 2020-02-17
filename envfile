@@ -7,3 +7,5 @@ export POSTGRES_PASSWORD=postgres
 export POSTGRES_DB=butterfly
 export POSTGRES_USER=postgres
 
+# SQL Server
+export ACCEPT_EULA=Y
