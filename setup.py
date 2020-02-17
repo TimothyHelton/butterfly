@@ -32,7 +32,7 @@ dependencies = {
         'git-lint',
         'pytest',
         'pytest-cov',
-        'pytest-pep8',
+        'pytest-pycodestyle',
     },
 }
 
@@ -89,6 +89,7 @@ setup(
     ),
     install_requires=[
         'click',
+        'matplotlib',
         'numpy',
         'pandas',
         'plotly',
