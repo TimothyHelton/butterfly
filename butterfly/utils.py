@@ -12,10 +12,11 @@ import operator
 import os
 import re
 import time
-from typing import Any, Dict, List, Union
+from typing import Any, Dict, List, Tuple, Union
 import warnings
 
 import matplotlib.pyplot as plt
+import numpy as np
 
 from butterfly.pkg_globals import FONT_SIZE, PACKAGE_ROOT
 from butterfly.exceptions import InputError
@@ -139,6 +140,25 @@ def project_vars():
     env_vars = re.findall(r'export\s(.*)=(.*)', txt)
     for name, value in env_vars:
         os.environ[name] = value
+
+
+def rle(arr: Union[List[Any], np.ndarray]) \
+        -> Union[Tuple[np.ndarray, ...], Tuple[None, ...]]:
+    """
+    Run Length Encode provided array.
+
+    :param arr: array to be encoded
+    :return: Start Indices for code, Length of code, Value of code
+    """
+    arr = np.array(arr) if not isinstance(arr, np.ndarray) else arr
+    vec = arr.flatten() if arr.ndim > 1 else arr
+    n = vec.size
+    if n == 0:
+        return None, None, None
+    switch_idx = np.nonzero(vec[1:] != vec[:-1])[0] + 1
+    ids = np.r_[0, switch_idx]
+    lengths = np.diff(np.r_[ids, n])
+    return ids, lengths, vec[ids]
 
 
 def status(status_logger: logging.Logger):
