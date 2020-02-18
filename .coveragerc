@@ -1,0 +1,15 @@
+[run]
+parallel = True
+
+[paths]
+source =
+    butterfly/
+
+[report]
+omit =
+    */__init__.py
+    */tests/*
+
+[html]
+directory = htmlcov
+title = Butterfly Test Coverage
