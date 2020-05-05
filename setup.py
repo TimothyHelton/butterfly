@@ -96,6 +96,7 @@ setup(
         'scikit-learn',
         'torch',
         'torchvision',
+        'xlrd',
     ],
     extras_require={
          'all': combine_dependencies(dependencies.keys()),
