@@ -21,7 +21,7 @@ conda==4.8.3
 conda-build==3.18.11
 conda-package-handling==1.7.0
 coverage==5.1
-cryptography==2.9.2
+cryptography==3.2
 cxxfilt==0.2.1
 cycler==0.10.0
 cymem==2.0.3
